@@ -6,7 +6,33 @@
         xmlns:local="clr-namespace:ProcessList"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Width" Value="50"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel Background="Lavender">
+        <DataGrid DockPanel.Dock="Left" Width="400" Margin="20" AutoGenerateColumns="False" ItemsSource="{Binding Processes, IsAsync=True}" IsReadOnly="True" EnableColumnVirtualization="True" EnableRowVirtualization="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" />
+                <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel>
+            <Button Command="{Binding RefreshCommand}">Refresh</Button>
+            <Button>Filter</Button>
+            <Button>Kill</Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Label VerticalAlignment="Center">Interval</Label>
+                <TextBox Width="50" VerticalAlignment="Center" Text="{Binding Interval}" />
+            </StackPanel>
+            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding AutoRefreshChecked}">
+                Auto refresh
+            </CheckBox>
+            <local:ProgressControl/>
+        </StackPanel>
+    </DockPanel>
 </Window>

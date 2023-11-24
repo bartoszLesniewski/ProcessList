@@ -1,5 +1,4 @@
-﻿using ProcessList.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,16 +16,13 @@ using System.Windows.Shapes;
 namespace ProcessList
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Logika interakcji dla klasy ProgressControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ProgressControl : UserControl
     {
-        private readonly ProcessViewModel _viewModel;
-        public MainWindow()
+        public ProgressControl()
         {
             InitializeComponent();
-            _viewModel = new ProcessViewModel();
-            DataContext = _viewModel;
         }
     }
 }
