@@ -17,10 +17,10 @@ namespace ProcessList.Model
         public string? Priority { get; set; }
         public int? ThreadsNumber { get; set; }
         public string? MainModulePath {  get; set; }
-        public long? PhysicalMemoryUsage { get; set; }
         public double? TotalProcessorTimeMinutes { get; set; }
         public string? CpuUsage { get; set; }
-        public string? MemoryUsage { get; set; }
+        public double? PhysicalMemoryUsage { get; set; }
+
 
         public ProcessModel(string name, int id)
         {
@@ -36,8 +36,9 @@ namespace ProcessList.Model
             Priority = ProcessUtils.GetProcessParameterAsString(process, "PriorityClass");
             ThreadsNumber = ProcessUtils.GetProcessParameterAsInt(process, "Threads");
             MainModulePath = ProcessUtils.GetProcessParameterAsString(process, "MainModule");
-            PhysicalMemoryUsage = ProcessUtils.GetProcessParameterAsLong(process, "WorkingSet64");
+            PhysicalMemoryUsage = ProcessUtils.GetProcessParameterAsDouble(process, "WorkingSet64");
             TotalProcessorTimeMinutes = ProcessUtils.GetProcessParameterAsDouble(process, "TotalProcessorTime");
+            CpuUsage = ProcessUtils.GetProcessCpuUsage(process);
         }
     }
 }

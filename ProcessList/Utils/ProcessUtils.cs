@@ -63,29 +63,6 @@ namespace ProcessList.Utils
             }
         }
 
-        public static long? GetProcessParameterAsLong(Process process, string parameterName)
-        {
-            long? val = null;
-            try
-            {
-                switch (parameterName)
-                {
-                    case "WorkingSet64":
-                        val = process.WorkingSet64;
-                        break;
-                    default:
-                        val = null;
-                        break;
-                }
-
-                return val;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public static double? GetProcessParameterAsDouble(Process process, string parameterName)
         {
             double? val = null;
@@ -93,8 +70,11 @@ namespace ProcessList.Utils
             {
                 switch (parameterName)
                 {
+                    case "WorkingSet64":
+                        val = Math.Round(process.WorkingSet64 / 1024.0 / 1024.0, 2);
+                        break;
                     case "TotalProcessorTime":
-                        val = Math.Round(process.TotalProcessorTime.TotalMinutes, 3);
+                        val = Math.Round(process.TotalProcessorTime.TotalMinutes, 2);
                         break;
                     default:
                         val = null;
@@ -124,6 +104,24 @@ namespace ProcessList.Utils
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public static string GetProcessCpuUsage(Process process)
+        {
+            try
+            {
+                TimeSpan cpuTime = process.TotalProcessorTime;
+                TimeSpan elapsedTime = DateTime.Now - process.StartTime;
+
+                double cpuUsage = Math.Round(
+                    (double)(cpuTime.TotalMilliseconds / elapsedTime.TotalMilliseconds) * 100.0, 2);
+
+                return cpuUsage.ToString() + " %";
+            }
+            catch (Exception)
+            {
+                return "N/A";
             }
         }
     }

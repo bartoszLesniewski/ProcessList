@@ -130,7 +130,7 @@ namespace ProcessList.ViewModel
             }
         }
 
-        private Dictionary<string, List<string>?>_selectedProcessModules;
+        private Dictionary<string, List<string>?> _selectedProcessModules;
         public Dictionary<string, List<string>?> SelectedProcessModules
         {
             get => _selectedProcessModules;
@@ -153,7 +153,7 @@ namespace ProcessList.ViewModel
             Processes = new ObservableCollection<ProcessModel>();
             IsProgressBarIndeterminate = false;
             ProgressBarVisibility = Visibility.Collapsed;
-            Interval = 10;
+            Interval = 15;
             RefreshCommand = new RelayCommand(Refresh);
             KillSelectedProcessCommand = new RelayCommand(KillSelectedProcess);
             SetPriorityCommand = new RelayCommand(SetPriority);
@@ -282,13 +282,14 @@ namespace ProcessList.ViewModel
                 SelectedProcessDetails = new Dictionary<string, object?>
                 {
                     {"Name", SelectedProcess.Name },
+                    {"Id", SelectedProcess.Id },
+                    {"Priority", SelectedProcess.Priority },
                     {"Threads number", SelectedProcess.ThreadsNumber },
-                    {"CPU Usage", "TODO" },
-                    {"Memory usage", "TODO" },
-                    {"Physical memory usage",
-                     SelectedProcess.PhysicalMemoryUsage != null ? SelectedProcess.PhysicalMemoryUsage.ToString()  + " bytes" : "" },
+                    {"Memory usage",
+                     SelectedProcess.PhysicalMemoryUsage != null ? SelectedProcess.PhysicalMemoryUsage.ToString()  + " MB" : "" },
                     {"Total processor time", 
-                     SelectedProcess.TotalProcessorTimeMinutes != null ? SelectedProcess.TotalProcessorTimeMinutes.ToString() + " minutes" : "" },
+                     SelectedProcess.TotalProcessorTimeMinutes != null ? SelectedProcess.TotalProcessorTimeMinutes.ToString() + " min" : "" },
+                    {"CPU Usage", SelectedProcess.CpuUsage }
                 };
 
                 SelectedProcessModules = new Dictionary<string, List<string>?>
