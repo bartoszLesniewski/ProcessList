@@ -141,7 +141,6 @@ namespace ProcessList.ViewModel
         public ICommand RefreshCommand { get; set; }
         public ICommand KillSelectedProcessCommand {  get; set; }
         public ICommand SetPriorityCommand { get; set; }
-        public ICommand FilterCommand {  get; set; }
 
         public ProcessViewModel()
         {
@@ -152,7 +151,6 @@ namespace ProcessList.ViewModel
             RefreshCommand = new RelayCommand(Refresh);
             KillSelectedProcessCommand = new RelayCommand(KillSelectedProcess);
             SetPriorityCommand = new RelayCommand(SetPriority);
-            FilterCommand = new RelayCommand(FilterProcesses);
             _dispatcherTimer = new DispatcherTimer();
             _dispatcherTimer.Tick += (sender, e) => Refresh(default!);
             Priorities = new List<ProcessPriorityClass>(
@@ -170,6 +168,7 @@ namespace ProcessList.ViewModel
                 _allProcesses.Add(new ProcessModel(process));
             });
 
+            FilterValue = default!;
             UpdateProcesses(_allProcesses);
         }
 
@@ -260,14 +259,17 @@ namespace ProcessList.ViewModel
 
         private void FilterProcesses(object obj)
         {
-            List<ProcessModel> filteredProcesses = new List<ProcessModel>(_allProcesses);
-            foreach (ProcessModel process in filteredProcesses.ToList())
+            if (FilterValue != null)
             {
-                if (!process.Name!.ToLower().Contains(FilterValue.ToLower()))
-                    filteredProcesses.Remove(process);
-            }
+                List<ProcessModel> filteredProcesses = new List<ProcessModel>(_allProcesses);
+                foreach (ProcessModel process in filteredProcesses.ToList())
+                {
+                    if (!process.Name!.ToLower().Contains(FilterValue.ToLower()))
+                        filteredProcesses.Remove(process);
+                }
 
-            UpdateProcesses(filteredProcesses);
+                UpdateProcesses(filteredProcesses);
+            }
         }
 
         private void GetProcessDetails()
