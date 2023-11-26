@@ -14,24 +14,79 @@
         </Style>
     </Window.Resources>
     <DockPanel Background="Lavender">
-        <DataGrid DockPanel.Dock="Left" Width="400" Margin="20" AutoGenerateColumns="False" ItemsSource="{Binding Processes, IsAsync=True}" IsReadOnly="True" EnableColumnVirtualization="True" EnableRowVirtualization="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" />
-                <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <Grid DockPanel.Dock="Left">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <DataGrid Grid.Row="0" Width="380" Margin="20, 20, 20, 0" AutoGenerateColumns="False" 
+                      ItemsSource="{Binding Processes, IsAsync=True}" 
+                      SelectedItem="{Binding SelectedProcess}"
+                      IsReadOnly="True" EnableColumnVirtualization="True" EnableRowVirtualization="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="ToolTip" Value="{Binding MainModulePath}"></Setter>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Grid Grid.Row="1" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding FilterValue, UpdateSourceTrigger=PropertyChanged}" Width="150" VerticalAlignment="Center" Grid.Column="0"></TextBox>
+                <Button Command="{Binding FilterCommand}" Grid.Column="1">Filter</Button>
+            </Grid>
+        </Grid>
         <StackPanel>
-            <Button Command="{Binding RefreshCommand}">Refresh</Button>
-            <Button>Filter</Button>
-            <Button>Kill</Button>
+            <ListView Background="Transparent" BorderBrush="Transparent"
+                      Margin="10, 10, 10, 0" Height="130" Padding="0"
+                      ItemsSource="{Binding SelectedProcessDetails}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Key}" FontWeight="Bold" />
+                            <TextBlock Grid.Column="1" Text="{Binding Value}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Grid Margin="18, 0, 10, 10" DataContext="{Binding SelectedProcessModules}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="142" />
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Key}" FontWeight="Bold" />
+                <ListBox Grid.Column="1" Height="80" MaxHeight="80" Background="Transparent" BorderBrush="Transparent"
+                     ItemsSource="{Binding Value}"></ListBox>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Command="{Binding KillSelectedProcessCommand}">Kill</Button>
+                <ComboBox Width="100" Height="20"
+                          ItemsSource="{Binding Priorities}"
+                          SelectedItem="{Binding SelectedPriority}" />
+                <Button Width="70" Command="{Binding SetPriorityCommand}">Set priority</Button>
+            </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Button Command="{Binding RefreshCommand}">Refresh</Button>
+                <CheckBox  Margin="50, 0, 10, 0" VerticalAlignment="Center" IsChecked="{Binding AutoRefreshChecked}">
+                    Auto refresh
+                </CheckBox>
                 <Label VerticalAlignment="Center">Interval</Label>
                 <TextBox Width="50" VerticalAlignment="Center" Text="{Binding Interval}" />
             </StackPanel>
-            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding AutoRefreshChecked}">
-                Auto refresh
-            </CheckBox>
+
             <local:ProgressControl/>
         </StackPanel>
     </DockPanel>

@@ -1,4 +1,5 @@
 ﻿using ProcessList.Model;
+using ProcessList.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,6 +21,7 @@ namespace ProcessList.ViewModel
     public class ProcessViewModel : ViewModelBase
     {
         private DispatcherTimer _dispatcherTimer;
+        private List<ProcessModel> _allProcesses;
         private ObservableCollection<ProcessModel> _processes;
         public ObservableCollection<ProcessModel> Processes
         {
@@ -82,7 +84,69 @@ namespace ProcessList.ViewModel
             }
         }
 
+        private string _filterValue;
+        public string FilterValue
+        {
+            get => _filterValue;
+            set
+            {
+                _filterValue = value;
+                OnPropertyChanged();
+                FilterProcesses(default!);
+            }
+        }
+
+        private ProcessPriorityClass _selectedPriority;
+        public ProcessPriorityClass SelectedPriority
+        {
+            get => _selectedPriority;
+            set
+            {
+                _selectedPriority = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ProcessModel _selectedProcess;
+        public ProcessModel SelectedProcess
+        {
+            get => _selectedProcess;
+            set
+            {
+                _selectedProcess = value;
+                GetProcessDetails();
+                OnPropertyChanged();
+            }
+        }
+
+        private Dictionary<string, object?> _selectedProcessDetails;
+        public Dictionary<string, object?> SelectedProcessDetails
+        {
+            get => _selectedProcessDetails;
+            set
+            {
+                _selectedProcessDetails = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Dictionary<string, List<string>?>_selectedProcessModules;
+        public Dictionary<string, List<string>?> SelectedProcessModules
+        {
+            get => _selectedProcessModules;
+            set
+            {
+                _selectedProcessModules = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<ProcessPriorityClass> Priorities { get; set; }
+
         public ICommand RefreshCommand { get; set; }
+        public ICommand KillSelectedProcessCommand {  get; set; }
+        public ICommand SetPriorityCommand { get; set; }
+        public ICommand FilterCommand {  get; set; }
 
         public ProcessViewModel()
         {
@@ -91,21 +155,35 @@ namespace ProcessList.ViewModel
             ProgressBarVisibility = Visibility.Collapsed;
             Interval = 10;
             RefreshCommand = new RelayCommand(Refresh);
+            KillSelectedProcessCommand = new RelayCommand(KillSelectedProcess);
+            SetPriorityCommand = new RelayCommand(SetPriority);
+            FilterCommand = new RelayCommand(FilterProcesses);
             _dispatcherTimer = new DispatcherTimer();
             _dispatcherTimer.Tick += (sender, e) => Refresh(default!);
+            Priorities = new List<ProcessPriorityClass>(
+                (IEnumerable<ProcessPriorityClass>)Enum.GetValues(typeof(ProcessPriorityClass)));
+            SelectedPriority = Priorities[0];
             Refresh(default!);
         }
 
         private void LoadProcesses(object sender, DoWorkEventArgs e)
         {
-            List<ProcessModel> processes = new List<ProcessModel>();
+            _allProcesses = new List<ProcessModel>();
 
             Parallel.ForEach(Process.GetProcesses(), process =>
             {
-                processes.Add(new ProcessModel(process));
+                _allProcesses.Add(new ProcessModel(process));
             });
 
-            Processes = new ObservableCollection<ProcessModel>(processes);
+            UpdateProcesses(_allProcesses);
+        }
+
+        private void UpdateProcesses(List<ProcessModel> updatedProcesses)
+        {
+            Processes = new ObservableCollection<ProcessModel>(updatedProcesses);
+            SelectedProcess = default!;
+            SelectedProcessDetails = default!;
+            SelectedProcessModules = default!;
         }
 
         private void Refresh(object obj)
@@ -135,6 +213,88 @@ namespace ProcessList.ViewModel
             else
             {
                 _dispatcherTimer.Stop();
+            }
+        }
+
+        private void KillSelectedProcess(object obj)
+        {
+            try
+            {
+                var selectedProcessName = SelectedProcess.Name;
+                SelectedProcess.ProcessObject.Kill();
+                _allProcesses.Remove(SelectedProcess);
+                Processes.Remove(SelectedProcess);
+                MessageBox.Show($"Process {selectedProcessName} killed successfully.",
+                    "Information",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Can't kill selected process.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void SetPriority(object obj)
+        {
+            try
+            {
+                SelectedProcess.ProcessObject.PriorityClass = SelectedPriority;
+                var updatedProcess = new ProcessModel(SelectedProcess.ProcessObject);
+                int index = Processes.IndexOf(SelectedProcess);
+                Processes[index] = updatedProcess;
+                _allProcesses[index] = updatedProcess;
+                SelectedProcess = updatedProcess;
+
+                MessageBox.Show($"Successfully changed priority of process {SelectedProcess.Name}.",
+                    "Information",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Can't change priority of selected process.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void FilterProcesses(object obj)
+        {
+            List<ProcessModel> filteredProcesses = new List<ProcessModel>(_allProcesses);
+            foreach (ProcessModel process in filteredProcesses.ToList())
+            {
+                if (!process.Name!.ToLower().Contains(FilterValue.ToLower()))
+                    filteredProcesses.Remove(process);
+            }
+
+            UpdateProcesses(filteredProcesses);
+        }
+
+        private void GetProcessDetails()
+        {
+            if (SelectedProcess != null)
+            {
+                SelectedProcessDetails = new Dictionary<string, object?>
+                {
+                    {"Name", SelectedProcess.Name },
+                    {"Threads number", SelectedProcess.ThreadsNumber },
+                    {"CPU Usage", "TODO" },
+                    {"Memory usage", "TODO" },
+                    {"Physical memory usage",
+                     SelectedProcess.PhysicalMemoryUsage != null ? SelectedProcess.PhysicalMemoryUsage.ToString()  + " bytes" : "" },
+                    {"Total processor time", 
+                     SelectedProcess.TotalProcessorTimeMinutes != null ? SelectedProcess.TotalProcessorTimeMinutes.ToString() + " minutes" : "" },
+                };
+
+                SelectedProcessModules = new Dictionary<string, List<string>?>
+                {
+                    { "Modules", ProcessUtils.GetProcessModules(SelectedProcess.ProcessObject) }
+                };
             }
         }
     }

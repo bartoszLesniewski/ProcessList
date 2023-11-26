@@ -11,12 +11,14 @@ namespace ProcessList.Model
 {
     public class ProcessModel
     {
+        public Process ProcessObject { get; set; }
         public string? Name { get; set; }
         public int? Id { get; set; }
         public string? Priority { get; set; }
         public int? ThreadsNumber { get; set; }
         public string? MainModulePath {  get; set; }
-        public int? ParentID { get; set; }
+        public long? PhysicalMemoryUsage { get; set; }
+        public double? TotalProcessorTimeMinutes { get; set; }
         public string? CpuUsage { get; set; }
         public string? MemoryUsage { get; set; }
 
@@ -28,17 +30,14 @@ namespace ProcessList.Model
 
         public ProcessModel(Process process)
         {
+            ProcessObject = process;
             Name = ProcessUtils.GetProcessParameterAsString(process, "ProcessName");
-            Id = process.Id;
+            Id = ProcessUtils.GetProcessParameterAsInt(process, "Id");
             Priority = ProcessUtils.GetProcessParameterAsString(process, "PriorityClass");
-            ThreadsNumber = process.Threads.Count;
+            ThreadsNumber = ProcessUtils.GetProcessParameterAsInt(process, "Threads");
             MainModulePath = ProcessUtils.GetProcessParameterAsString(process, "MainModule");
-
-            //Name = ProcessUtils.GetProcessParameter(process, "ProcessName")?.ToString() ?? "Unknown";
-            //Id = Convert.ToInt32(ProcessUtils.GetProcessParameter(process, "Id"));
-            //Priority = ProcessUtils.GetProcessParameter(process, "PriorityClass")?.ToString() ?? "Unknown";
-            //ThreadsNumber = (ProcessUtils.GetProcessParameter(process, "Threads") as IList)?.Count;
-            //MainModulePath = (ProcessUtils.GetProcessParameter(process, "MainModule") as ProcessModule)?.FileName;
+            PhysicalMemoryUsage = ProcessUtils.GetProcessParameterAsLong(process, "WorkingSet64");
+            TotalProcessorTimeMinutes = ProcessUtils.GetProcessParameterAsDouble(process, "TotalProcessorTime");
         }
     }
 }
