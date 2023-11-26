@@ -237,7 +237,7 @@ namespace ProcessList.ViewModel
             try
             {
                 SelectedProcess.ProcessObject.PriorityClass = SelectedPriority;
-                var updatedProcess = new ProcessModel(SelectedProcess.ProcessObject);
+                var updatedProcess = new ProcessModel(Process.GetProcessById(SelectedProcess.Id!.Value));
                 int index = Processes.IndexOf(SelectedProcess);
                 Processes[index] = updatedProcess;
                 _allProcesses[index] = updatedProcess;
