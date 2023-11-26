@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProcessList"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Process list" Height="450" Width="800">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Margin" Value="10" />
