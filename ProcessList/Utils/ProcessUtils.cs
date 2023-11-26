@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProcessList.Utils
 {
@@ -12,7 +8,7 @@ namespace ProcessList.Utils
     {
         public static string GetProcessParameterAsString(Process process, string parameterName)
         {
-            string val = "Unknown";
+            string val = "N/A";
             try
             {
                 switch (parameterName)
@@ -24,7 +20,7 @@ namespace ProcessList.Utils
                         val = process.PriorityClass.ToString();
                         break;
                     case "MainModule":
-                        val = process.MainModule != null ? process.MainModule.FileName! : "Unknown";
+                        val = process.MainModule != null ? process.MainModule.FileName! : "N/Af";
                         break;
                 }
 
@@ -32,7 +28,7 @@ namespace ProcessList.Utils
             }
             catch (Exception)
             {
-                return "Unknown";
+                return "N/A";
             }
         }
 

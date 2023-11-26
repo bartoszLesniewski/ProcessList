@@ -1,11 +1,5 @@
 ﻿using ProcessList.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProcessList.Model
 {
@@ -20,13 +14,6 @@ namespace ProcessList.Model
         public double? TotalProcessorTimeMinutes { get; set; }
         public string? CpuUsage { get; set; }
         public double? PhysicalMemoryUsage { get; set; }
-
-
-        public ProcessModel(string name, int id)
-        {
-            Name = name;
-            Id = id;
-        }
 
         public ProcessModel(Process process)
         {

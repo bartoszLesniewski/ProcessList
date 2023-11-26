@@ -6,12 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -286,9 +281,9 @@ namespace ProcessList.ViewModel
                     {"Priority", SelectedProcess.Priority },
                     {"Threads number", SelectedProcess.ThreadsNumber },
                     {"Memory usage",
-                     SelectedProcess.PhysicalMemoryUsage != null ? SelectedProcess.PhysicalMemoryUsage.ToString()  + " MB" : "" },
+                     SelectedProcess.PhysicalMemoryUsage != null ? SelectedProcess.PhysicalMemoryUsage.ToString()  + " MB" : "N/A" },
                     {"Total processor time", 
-                     SelectedProcess.TotalProcessorTimeMinutes != null ? SelectedProcess.TotalProcessorTimeMinutes.ToString() + " min" : "" },
+                     SelectedProcess.TotalProcessorTimeMinutes != null ? SelectedProcess.TotalProcessorTimeMinutes.ToString() + " min" : "N/A" },
                     {"CPU Usage", SelectedProcess.CpuUsage }
                 };
 
