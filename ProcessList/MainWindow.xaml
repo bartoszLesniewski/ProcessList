@@ -53,7 +53,7 @@
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="135" />
+                                <ColumnDefinition Width="140" />
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding Key}" FontWeight="Bold" />
@@ -64,7 +64,7 @@
             </ListView>
             <Grid Margin="18, 0, 10, 10" DataContext="{Binding SelectedProcessModules}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="127" />
+                    <ColumnDefinition Width="132" />
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="{Binding Key}" FontWeight="Bold" />
